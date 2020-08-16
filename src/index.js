@@ -1,11 +1,11 @@
-import React from 'react';
+import React,{createContext} from 'react';
 import ReactDOM from 'react-dom';
 import thunk from 'redux-thunk';
 
 import './index.css';
 import App from './components/App';
 import { createStore,applyMiddleware } from 'redux';
-import combineReducers from './reducers';
+import rootReducers from './reducers';
 
 // const logger = function({ dispatch,getState}){
 
@@ -40,8 +40,26 @@ const logger = ({ dispatch,getState}) => (next) => (action) =>{
 
 // }
 
-const store = createStore(combineReducers,applyMiddleware(logger,thunk));
+const store = createStore(rootReducers,applyMiddleware(logger,thunk));
 
+export const StoreContext = createContext();
 
+class Provider extends React.Component {
 
-ReactDOM.render(<App store = {store}/>,document.getElementById('root'));
+    render(){
+        const {store} = this.props;
+        return(
+
+            <StoreContext.Provider value={store}>
+                {this.props.children}
+            </StoreContext.Provider>
+        );
+    }
+}
+
+ReactDOM.render(
+
+     <Provider store = {store}>
+         <App/>
+    </Provider>
+    ,document.getElementById('root'));
